@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#A50034">
+<meta name="description" content="XC Scan and Commission calculator with daily archive and date-range totals">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Scan & Commission | XC Staff App</title>
+<style>
+:root{--red:#A50034;--gold:#f2b632;--ink:#222;--muted:#6b6670;--bg:#f5f3f4;--line:#e8e2e5;--green:#167348}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:var(--red);color:white;padding:calc(16px + env(safe-area-inset-top)) 18px 18px;box-shadow:0 3px 12px #0002}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:22px;border:3px solid var(--gold)}
+h1{font-size:21px;margin:0}header p{margin:3px 0 0;font-size:13px;opacity:.9}
+main{max-width:760px;margin:0 auto;padding:14px;display:grid;gap:14px}.card{background:white;border-radius:16px;padding:17px;box-shadow:0 2px 10px #27101a0b;border:1px solid var(--line)}
+h2{font-size:18px;margin:0 0 12px}.sub{font-size:13px;color:var(--muted);margin:-5px 0 13px}
+label{display:block;font-weight:650;font-size:14px;margin:10px 0 5px}input{width:100%;font:inherit;border:1px solid #d8d1d5;border-radius:10px;padding:12px;background:#fff;min-height:46px;color:var(--ink)}input:focus{outline:3px solid #a5003425;border-color:var(--red)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#fff8e4;border:1px solid #f4e2a7;border-radius:12px;padding:12px}.metric span{display:block;color:#665c47;font-size:12px}.metric strong{display:block;font-size:21px;margin-top:3px}.total{background:var(--red);color:white;border-radius:13px;padding:15px;margin-top:12px}.total span{font-size:13px;opacity:.9}.total strong{display:block;font-size:30px;line-height:1.2;margin-top:3px}
+button{border:0;border-radius:11px;padding:12px 15px;font:700 15px system-ui;cursor:pointer;min-height:44px}.primary{background:var(--gold);color:#2d2100;width:100%;margin-top:13px}.secondary{background:#f3e9ed;color:var(--red)}.danger{background:#fff0f1;color:#a50034}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
+.tabs{display:flex;gap:8px}.tabs button{flex:1;background:#eee7ea;color:#5b3442}.tabs button.active{background:var(--red);color:white}
+.hidden{display:none!important}.entry{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:9px}.entry-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.entry-date{font-weight:800}.money{font-weight:850;color:var(--red);white-space:nowrap}.small{font-size:13px;color:var(--muted)}.range-result{margin-top:12px;padding:14px;border-radius:12px;background:#f8f5f6}.range-result strong{font-size:27px;color:var(--red)}.empty{padding:16px;text-align:center;color:var(--muted);font-size:14px}.notice{font-size:12px;color:var(--muted);text-align:center;padding:3px 10px 12px}
+@media(min-width:620px){main{grid-template-columns:1fr 1fr;align-items:start}.wide{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header><div class="brand"><div class="logo">XC</div><div><h1>Scan & Commission</h1><p>XC Staff App · Daily archive & date-range totals</p></div></div></header>
+<main>
+<section class="card">
+<h2>Today's commission</h2>
+<p class="sub">Enter the day's ticket sales and scans. Values update live.</p>
+<label for="workDate">Archive date</label><input id="workDate" type="date">
+<div class="grid">
+<div><label for="sales">Ticket sales (£)</label><input id="sales" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+<div><label for="scans">Ticket scans</label><input id="scans" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+</div>
+<div class="grid" style="margin-top:12px">
+<div class="metric"><span>Sales commission · 6%</span><strong id="salesComm">£0.00</strong></div>
+<div class="metric"><span>Scan payment · 2p each</span><strong id="scanComm">£0.00</strong></div>
+</div>
+<div class="total"><span>Total commission</span><strong id="total">£0.00</strong></div>
+<button class="primary" id="saveDay">Archive / Update This Date</button>
+<div class="small" id="saveStatus" aria-live="polite" style="margin-top:8px"></div>
+</section>
+
+<section class="card">
+<h2>Commission by date period</h2>
+<p class="sub">Choose a start and end date to total archived days, inclusive.</p>
+<label for="fromDate">From</label><input type="date" id="fromDate">
+<label for="toDate">To</label><input type="date" id="toDate">
+<div class="range-result"><div class="small" id="rangeLabel">Select a date range</div><strong id="rangeTotal">£0.00</strong><div class="small" id="rangeBreakdown">0 scans · £0.00 sales</div></div>
+<button class="primary" id="calculateRange">Calculate date period</button>
+</section>
+
+<section class="card wide">
+<div class="entry-head"><div><h2 style="margin-bottom:3px">Daily archive</h2><div class="sub" style="margin:0">Saved on this device; available offline after installation.</div></div><button class="secondary" id="exportCsv">Export CSV</button></div>
+<div class="tabs" style="margin-top:12px"><button class="active" id="allTab">All days</button><button id="rangeTab">Selected period</button></div>
+<div id="archiveList"></div>
+<div class="actions"><button class="secondary" id="exportBackup">Backup data</button><button class="secondary" id="importBackup">Restore backup</button><input class="hidden" id="backupFile" type="file" accept="application/json"></div>
+</section>
+<div class="notice wide">Commission formula: ticket sales × 6% + ticket scans × £0.02. Data is stored locally in this browser/device. Export a backup before changing or resetting devices.</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const pounds=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(n)||0);
+let archive=JSON.parse(localStorage.getItem('xcScanCommissionArchive')||'{}');
+let showRange=false;
+$('workDate').value=today(); $('fromDate').value=today(); $('toDate').value=today();
+function calc(){const sales=Math.max(0,Number($('sales').value)||0),scans=Math.max(0,Math.floor(Number($('scans').value)||0));const sc=sales*.06,tc=scans*.02; $('salesComm').textContent=pounds(sc);$('scanComm').textContent=pounds(tc);$('total').textContent=pounds(sc+tc);return {date:$('workDate').value||today(),sales,scans,salesCommission:+sc.toFixed(2),scanCommission:+tc.toFixed(2),total:+(sc+tc).toFixed(2)}}
+function persist(){localStorage.setItem('xcScanCommissionArchive',JSON.stringify(archive));renderArchive();calcRange()}
+function loadDate(){const x=archive[$('workDate').value];$('sales').value=x?x.sales:'';$('scans').value=x?x.scans:'';$('saveStatus').textContent=x?'Archived figures loaded for this date.':'';calc()}
+function saveDay(){const e=calc();if(!e.date){$('saveStatus').textContent='Please select a date.';return}archive[e.date]=e;persist();$('saveStatus').textContent='Saved '+e.date+' · '+pounds(e.total)+' total commission.'}
+function calcRange(){const a=$('fromDate').value,b=$('toDate').value;if(!a||!b||a>b){$('rangeLabel').textContent='Choose a valid date range (From must be on or before To).';$('rangeTotal').textContent=pounds(0);$('rangeBreakdown').textContent='';return}
+const rows=Object.values(archive).filter(e=>e.date>=a&&e.date<=b);const totals=rows.reduce((s,e)=>({sales:s.sales+(+e.sales||0),scans:s.scans+(+e.scans||0),commission:s.commission+(+e.total||0)}),{sales:0,scans:0,commission:0});
+$('rangeLabel').textContent=`${a} to ${b} · ${rows.length} archived ${rows.length===1?'day':'days'}`;$('rangeTotal').textContent=pounds(totals.commission);$('rangeBreakdown').textContent=`${totals.scans.toLocaleString('en-GB')} scans · ${pounds(totals.sales)} sales · includes saved days only`;renderArchive()}
+function renderArchive(){const rows=Object.values(archive).filter(e=>!showRange||(e.date>=$('fromDate').value&&e.date<=$('toDate').value)).sort((a,b)=>b.date.localeCompare(a.date));const el=$('archiveList');if(!rows.length){el.innerHTML='<div class="empty">No archived days yet. Enter figures above and select “Archive / Update This Date”.</div>';return}
+el.innerHTML=rows.map(e=>`<div class="entry"><div class="entry-head"><div><div class="entry-date">${e.date}</div><div class="small">${Number(e.scans||0).toLocaleString('en-GB')} scans · ${pounds(e.sales)} sales</div></div><div class="money">${pounds(e.total)}</div></div><div class="small">Sales commission ${pounds(e.salesCommission)} · Scan payment ${pounds(e.scanCommission)}</div><div class="actions"><button class="secondary" data-load="${e.date}">Load / Edit</button><button class="danger" data-delete="${e.date}">Delete</button></div></div>`).join('');
+el.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{$('workDate').value=b.dataset.load;loadDate();window.scrollTo({top:0,behavior:'smooth'})});
+el.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const d=b.dataset.delete;if(confirm('Delete archived commission for '+d+'?')){delete archive[d];persist()}});
+}
+function csv(){const rows=[['Date','Ticket sales (£)','Ticket scans','Sales commission (£)','Scan payment (£)','Total commission (£)'],...Object.values(archive).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.sales,e.scans,e.salesCommission,e.scanCommission,e.total])];const text=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n');download(text,'xc-commission-archive.csv','text/csv')}
+function download(data,name,type){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
+$('sales').addEventListener('input',calc);$('scans').addEventListener('input',calc);$('workDate').addEventListener('change',loadDate);
+$('saveDay').onclick=saveDay;$('calculateRange').onclick=calcRange;$('fromDate').onchange=calcRange;$('toDate').onchange=calcRange;
+$('allTab').onclick=()=>{showRange=false;$('allTab').classList.add('active');$('rangeTab').classList.remove('active');renderArchive()};
+$('rangeTab').onclick=()=>{showRange=true;$('rangeTab').classList.add('active');$('allTab').classList.remove('active');renderArchive()};
+$('exportCsv').onclick=csv;
+$('exportBackup').onclick=()=>download(JSON.stringify({format:'xc-scan-commission-backup-v1',archive},null,2),'xc-commission-backup-'+today()+'.json','application/json');
+$('importBackup').onclick=()=>$('backupFile').click();
+$('backupFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const incoming=data.archive||data;if(!incoming||typeof incoming!=='object')throw Error();if(confirm('Restore backup? Dates in the backup will replace matching archived dates.')){archive={...archive,...incoming};persist();$('saveStatus').textContent='Backup restored.'}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
+function init(){loadDate();renderArchive();calcRange();if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}
+init();
+</script>
+</body></html>

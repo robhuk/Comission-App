@@ -1,0 +1,14 @@
+{
+  "name": "XC Scan & Commission",
+  "short_name": "Commission",
+  "description": "Daily scan and ticket sales commission archive",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f3f4",
+  "theme_color": "#A50034",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}
