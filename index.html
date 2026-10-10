@@ -1,96 +1,73 @@
 <!doctype html>
 <html lang="en-GB">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#A50034">
-<meta name="description" content="XC Scan and Commission calculator with daily archive and date-range totals">
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<title>Scan & Commission | XC Staff App</title>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#a50034"><meta name="description" content="CrossCountry commission calculator">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon-192.png">
+<title>XC Commission Calculator</title>
 <style>
-:root{--red:#A50034;--gold:#f2b632;--ink:#222;--muted:#6b6670;--bg:#f5f3f4;--line:#e8e2e5;--green:#167348}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
-header{background:var(--red);color:white;padding:calc(16px + env(safe-area-inset-top)) 18px 18px;box-shadow:0 3px 12px #0002}
-.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:12px;background:#fff;color:var(--red);display:grid;place-items:center;font-weight:900;font-size:22px;border:3px solid var(--gold)}
-h1{font-size:21px;margin:0}header p{margin:3px 0 0;font-size:13px;opacity:.9}
-main{max-width:760px;margin:0 auto;padding:14px;display:grid;gap:14px}.card{background:white;border-radius:16px;padding:17px;box-shadow:0 2px 10px #27101a0b;border:1px solid var(--line)}
-h2{font-size:18px;margin:0 0 12px}.sub{font-size:13px;color:var(--muted);margin:-5px 0 13px}
-label{display:block;font-weight:650;font-size:14px;margin:10px 0 5px}.date-hint{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}input{width:100%;font:inherit;border:1px solid #d8d1d5;border-radius:10px;padding:12px;background:#fff;min-height:46px;color:var(--ink)}input:focus{outline:3px solid #a5003425;border-color:var(--red)}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#fff8e4;border:1px solid #f4e2a7;border-radius:12px;padding:12px}.metric span{display:block;color:#665c47;font-size:12px}.metric strong{display:block;font-size:21px;margin-top:3px}.total{background:var(--red);color:white;border-radius:13px;padding:15px;margin-top:12px}.total span{font-size:13px;opacity:.9}.total strong{display:block;font-size:30px;line-height:1.2;margin-top:3px}
-button{border:0;border-radius:11px;padding:12px 15px;font:700 15px system-ui;cursor:pointer;min-height:44px}.primary{background:var(--gold);color:#2d2100;width:100%;margin-top:13px}.secondary{background:#f3e9ed;color:var(--red)}.danger{background:#fff0f1;color:#a50034}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
-.tabs{display:flex;gap:8px}.tabs button{flex:1;background:#eee7ea;color:#5b3442}.tabs button.active{background:var(--red);color:white}
-.hidden{display:none!important}.entry{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:9px}.entry-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.entry-date{font-weight:800}.money{font-weight:850;color:var(--red);white-space:nowrap}.small{font-size:13px;color:var(--muted)}.range-result{margin-top:12px;padding:14px;border-radius:12px;background:#f8f5f6}.range-result strong{font-size:27px;color:var(--red)}.empty{padding:16px;text-align:center;color:var(--muted);font-size:14px}.notice{font-size:12px;color:var(--muted);text-align:center;padding:3px 10px 12px}
-@media(min-width:620px){main{grid-template-columns:1fr 1fr;align-items:start}.wide{grid-column:1/-1}}
+:root{--red:#a50034;--red-dark:#790027;--gold:#ffc72c;--ink:#20232a;--muted:#667085;--line:#e4e7ec}
+*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:var(--ink);font:16px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+header{background:linear-gradient(135deg,var(--red),var(--red-dark));color:white;padding:22px 18px 25px;border-bottom:5px solid var(--gold)}
+.head{max-width:520px;margin:auto;display:flex;align-items:center;gap:12px}.brand-icon{width:48px;height:48px;flex:0 0 48px;object-fit:cover;border-radius:13px;background:white;box-shadow:0 2px 8px #0002}
+h1{font-size:1.3rem;line-height:1.2;margin:0 0 4px;font-weight:800}.sub{font-size:.9rem;color:#ffe7ee;margin:0}
+main{width:100%;max-width:520px;margin:16px auto;padding:0 12px 20px;min-width:0}.card{background:white;border:1px solid #e8e8ec;border-radius:16px;padding:clamp(14px,4vw,20px);box-shadow:0 5px 18px #161b2610;margin-bottom:13px;min-width:0}
+label{display:block;font-weight:750;margin:0 0 8px}.hint{display:block;color:var(--muted);font-size:.82rem;font-weight:400;margin-top:2px}
+input{display:block;width:100%;min-width:0;max-width:100%;font:inherit;font-size:1.1rem;padding:13px 12px;border:1.5px solid #cfd4dc;border-radius:11px;background:#fff;color:var(--ink);outline:none}
+input:focus{border-color:var(--red);box-shadow:0 0 0 3px #a5003420}input::placeholder{color:#9aa1ad}
+.field{margin-bottom:19px}.field:last-child{margin-bottom:0}
+.result{background:var(--red);color:white;border-radius:17px;padding:20px;box-shadow:0 7px 20px #a5003430}.result-label{font-size:.9rem;font-weight:700;color:#ffe1e9}.total{font-size:clamp(2.4rem,11vw,3.25rem);font-weight:850;letter-spacing:-1.5px;line-height:1.2;margin:6px 0 17px;overflow-wrap:anywhere}
+.breakdown{border-top:1px solid #ffffff40;padding-top:13px;display:grid;gap:10px}.break-row{display:flex;justify-content:space-between;gap:12px;font-size:.94rem}.break-row span:first-child{color:#ffe1e9}.break-row strong{white-space:nowrap}
+button{font:inherit;cursor:pointer;border:0;border-radius:11px;font-weight:750;min-height:45px;padding:11px 15px}
+.reset{background:#fff0f3;color:var(--red);width:100%;margin-top:14px}.settings-toggle{background:transparent;color:var(--muted);font-size:.84rem;padding:8px 2px;min-height:36px}
+.settings{display:none;margin-top:10px}.settings.open{display:block}.settings h2{font-size:1rem;margin:0 0 14px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.settings label{font-size:.88rem}.settings input{font-size:1rem;padding:11px}.settings-note{font-size:.78rem;color:var(--muted);margin:12px 0 0}
+footer{text-align:center;color:#777e89;font-size:.76rem;padding:2px 15px 20px}
+@media(max-width:360px){header{padding:16px 12px 19px}h1{font-size:1.12rem}.sub{font-size:.82rem}.total{font-size:2.35rem}.result{padding:16px}.break-row{font-size:.88rem}}\n@media(min-width:520px){main{padding-top:4px}.card{padding:23px}}
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">XC</div><div><h1>Scan & Commission</h1></div></div></header>
+<header><div class="head"><img class="brand-icon" src="icon-192.png" alt="" aria-hidden="true"><div><h1>Commission Calculator</h1><p class="sub">Daily ticket sales & scan commission</p></div></div></header>
 <main>
-<section class="card">
-<h2>Today's commission</h2>
-<p class="sub">Enter the day's ticket sales and scans. Values update live.</p>
-<label for="workDate">Archive date <span class="date-hint">DD/MM/YYYY</span></label><input id="workDate" type="date" lang="en-GB">
-<div class="grid">
-<div><label for="sales">Ticket sales (£)</label><input id="sales" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
-<div><label for="scans">Ticket scans</label><input id="scans" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
-</div>
-<div class="grid" style="margin-top:12px">
-<div class="metric"><span>Sales commission · 6%</span><strong id="salesComm">£0.00</strong></div>
-<div class="metric"><span>Scan payment · 2p each</span><strong id="scanComm">£0.00</strong></div>
-</div>
-<div class="total"><span>Total commission</span><strong id="total">£0.00</strong></div>
-<button class="primary" id="saveDay">Archive / Update This Date</button>
-<div class="small" id="saveStatus" aria-live="polite" style="margin-top:8px"></div>
+<section class="card" aria-label="Today's figures">
+<div class="field"><label for="scans">Scans today <span class="hint">Enter a number from 0 to 9,999</span></label><input id="scans" type="number" inputmode="numeric" min="0" max="9999" step="1" placeholder="e.g. 245" value="0"></div>
+<div class="field"><label for="sales">Ticket sales (£) <span class="hint">Total ticket sales taken today</span></label><input id="sales" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="0.00"></div>
 </section>
-
-<section class="card">
-<h2>Commission by date period</h2>
-<p class="sub">Choose a start and end date to total archived days, inclusive.</p>
-<label for="fromDate">From <span class="date-hint">DD/MM/YYYY</span></label><input type="date" id="fromDate" lang="en-GB">
-<label for="toDate">To <span class="date-hint">DD/MM/YYYY</span></label><input type="date" id="toDate" lang="en-GB">
-<div class="range-result"><div class="small" id="rangeLabel">Select a date range</div><strong id="rangeTotal">£0.00</strong><div class="small" id="rangeBreakdown">0 scans · £0.00 sales</div></div>
-<button class="primary" id="calculateRange">Calculate date period</button>
+<section class="result" aria-live="polite"><div class="result-label">TOTAL COMMISSION TODAY</div><div class="total" id="total">£0.00</div><div class="breakdown">
+<div class="break-row"><span>Scan commission</span><strong id="scan-total">£0.00</strong></div>
+<div class="break-row"><span>Ticket sales commission</span><strong id="sales-total">£0.00</strong></div>
+</div></section>
+<button class="reset" id="reset" type="button">Reset today’s figures</button>
+<div style="text-align:center;margin-top:12px"><button class="settings-toggle" id="settings-toggle" type="button" aria-expanded="false">⚙ Rate settings</button></div>
+<section class="card settings" id="settings" aria-label="Commission rate settings">
+<h2>Commission rates</h2><div class="settings-grid">
+<div><label for="scan-rate">Rate per scan (£)</label><input id="scan-rate" type="number" min="0" step="0.001" value="0.02"></div>
+<div><label for="sales-rate">Ticket sales rate (%)</label><input id="sales-rate" type="number" min="0" max="100" step="0.1" value="6"></div>
+</div><p class="settings-note">Rates are saved on this device and used in future calculations. Default rates: £0.02 per scan and 6% of ticket sales.</p>
 </section>
-
-<section class="card wide">
-<div class="entry-head"><div><h2 style="margin-bottom:3px">Daily archive</h2><div class="sub" style="margin:0">Saved on this device; available offline after installation.</div></div><button class="secondary" id="exportCsv">Export CSV</button></div>
-<div class="tabs" style="margin-top:12px"><button class="active" id="allTab">All days</button><button id="rangeTab">Selected period</button></div>
-<div id="archiveList"></div>
-<div class="actions"><button class="secondary" id="exportBackup">Backup data</button><button class="secondary" id="importBackup">Restore backup</button><input class="hidden" id="backupFile" type="file" accept="application/json"></div>
-</section>
-<div class="notice wide">Commission formula: ticket sales × 6% + ticket scans × £0.02. Data is stored locally in this browser/device. Export a backup before changing or resetting devices.</div>
 </main>
+<footer>XC Commission Calculator · Runs offline after installation</footer>
 <script>
 const $=id=>document.getElementById(id);
-const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
-const pounds=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number(n)||0);
-let archive=JSON.parse(localStorage.getItem('xcScanCommissionArchive')||'{}');
-let showRange=false;
-$('workDate').value=today(); $('fromDate').value=today(); $('toDate').value=today();
-function calc(){const sales=Math.max(0,Number($('sales').value)||0),scans=Math.max(0,Math.floor(Number($('scans').value)||0));const sc=sales*.06,tc=scans*.02; $('salesComm').textContent=pounds(sc);$('scanComm').textContent=pounds(tc);$('total').textContent=pounds(sc+tc);return {date:$('workDate').value||today(),sales,scans,salesCommission:+sc.toFixed(2),scanCommission:+tc.toFixed(2),total:+(sc+tc).toFixed(2)}}
-function persist(){localStorage.setItem('xcScanCommissionArchive',JSON.stringify(archive));renderArchive();calcRange()}
-function loadDate(){const x=archive[$('workDate').value];$('sales').value=x?x.sales:'';$('scans').value=x?x.scans:'';$('saveStatus').textContent=x?'Archived figures loaded for '+displayDate($('workDate').value)+'.':'';calc()}
-function saveDay(){const e=calc();if(!e.date){$('saveStatus').textContent='Please select a date.';return}archive[e.date]=e;persist();$('saveStatus').textContent='Saved '+e.date+' · '+pounds(e.total)+' total commission.'}
-function calcRange(){const a=$('fromDate').value,b=$('toDate').value;if(!a||!b||a>b){$('rangeLabel').textContent='Choose a valid date range (From must be on or before To).';$('rangeTotal').textContent=pounds(0);$('rangeBreakdown').textContent='';return}
-const rows=Object.values(archive).filter(e=>e.date>=a&&e.date<=b);const totals=rows.reduce((s,e)=>({sales:s.sales+(+e.sales||0),scans:s.scans+(+e.scans||0),commission:s.commission+(+e.total||0)}),{sales:0,scans:0,commission:0});
-$('rangeLabel').textContent=`${displayDate(a)} to ${displayDate(b)} · ${rows.length} archived ${rows.length===1?'day':'days'}`;$('rangeTotal').textContent=pounds(totals.commission);$('rangeBreakdown').textContent=`${totals.scans.toLocaleString('en-GB')} scans · ${pounds(totals.sales)} sales · includes saved days only`;renderArchive()}
-function renderArchive(){const rows=Object.values(archive).filter(e=>!showRange||(e.date>=$('fromDate').value&&e.date<=$('toDate').value)).sort((a,b)=>b.date.localeCompare(a.date));const el=$('archiveList');if(!rows.length){el.innerHTML='<div class="empty">No archived days yet. Enter figures above and select “Archive / Update This Date”.</div>';return}
-el.innerHTML=rows.map(e=>`<div class="entry"><div class="entry-head"><div><div class="entry-date">${displayDate(e.date)}</div><div class="small">${Number(e.scans||0).toLocaleString('en-GB')} scans · ${pounds(e.sales)} sales</div></div><div class="money">${pounds(e.total)}</div></div><div class="small">Sales commission ${pounds(e.salesCommission)} · Scan payment ${pounds(e.scanCommission)}</div><div class="actions"><button class="secondary" data-load="${e.date}">Load / Edit</button><button class="danger" data-delete="${e.date}">Delete</button></div></div>`).join('');
-el.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{$('workDate').value=b.dataset.load;loadDate();window.scrollTo({top:0,behavior:'smooth'})});
-el.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const d=b.dataset.delete;if(confirm('Delete archived commission for '+d+'?')){delete archive[d];persist()}});
+const money=n=>new Intl.NumberFormat('en-GB',{style:'currency',currency:'GBP'}).format(Number.isFinite(n)?n:0);
+function clampNum(value,min,max){let n=Number(value);if(!Number.isFinite(n))n=0;return Math.min(max,Math.max(min,n))}
+function calculate(){
+ const scans=clampNum($('scans').value,0,9999);
+ const sales=clampNum($('sales').value,0,1e12);
+ const scanRate=clampNum($('scan-rate').value,0,1e6);
+ const salesRate=clampNum($('sales-rate').value,0,100);
+ const a=Math.round(scans*scanRate*100)/100;
+ const b=Math.round(sales*(salesRate/100)*100)/100;
+ $('scan-total').textContent=money(a);$('sales-total').textContent=money(b);$('total').textContent=money(a+b);
 }
-function csv(){const rows=[['Date','Ticket sales (£)','Ticket scans','Sales commission (£)','Scan payment (£)','Total commission (£)'],...Object.values(archive).sort((a,b)=>a.date.localeCompare(b.date)).map(e=>[e.date,e.sales,e.scans,e.salesCommission,e.scanCommission,e.total])];const text=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\r\n');download(text,'xc-commission-archive.csv','text/csv')}
-function download(data,name,type){const blob=new Blob([data],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();URL.revokeObjectURL(url)}
-$('sales').addEventListener('input',calc);$('scans').addEventListener('input',calc);$('workDate').addEventListener('change',loadDate);
-$('saveDay').onclick=saveDay;$('calculateRange').onclick=calcRange;$('fromDate').onchange=calcRange;$('toDate').onchange=calcRange;
-$('allTab').onclick=()=>{showRange=false;$('allTab').classList.add('active');$('rangeTab').classList.remove('active');renderArchive()};
-$('rangeTab').onclick=()=>{showRange=true;$('rangeTab').classList.add('active');$('allTab').classList.remove('active');renderArchive()};
-$('exportCsv').onclick=csv;
-$('exportBackup').onclick=()=>download(JSON.stringify({format:'xc-scan-commission-backup-v1',archive},null,2),'xc-commission-backup-'+today()+'.json','application/json');
-$('importBackup').onclick=()=>$('backupFile').click();
-$('backupFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const incoming=data.archive||data;if(!incoming||typeof incoming!=='object')throw Error();if(confirm('Restore backup? Dates in the backup will replace matching archived dates.')){archive={...archive,...incoming};persist();$('saveStatus').textContent='Backup restored.'}}catch(err){alert('That backup file could not be read.')}e.target.value=''};
-function init(){loadDate();renderArchive();calcRange();if('serviceWorker'in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./service-worker.js').catch(()=>{})}
-init();
+['scans','sales','scan-rate','sales-rate'].forEach(id=>$(id).addEventListener('input',()=>{
+ if(id==='scans' && $('scans').value!=='') $('scans').value=String(Math.floor(clampNum($('scans').value,0,9999)));
+ if(id==='scan-rate'||id==='sales-rate'){try{localStorage.setItem('xc-commission-rates',JSON.stringify({scan:clampNum($('scan-rate').value,0,1e6),sales:clampNum($('sales-rate').value,0,100)}))}catch(e){}}
+ calculate();
+}));
+try{const r=JSON.parse(localStorage.getItem('xc-commission-rates')||'null');if(r){if(Number.isFinite(r.scan))$('scan-rate').value=r.scan;if(Number.isFinite(r.sales))$('sales-rate').value=r.sales}}catch(e){}
+$('settings-toggle').addEventListener('click',()=>{const open=$('settings').classList.toggle('open');$('settings-toggle').setAttribute('aria-expanded',String(open));$('settings-toggle').textContent=open?'⚙ Hide rate settings':'⚙ Rate settings'});
+$('reset').addEventListener('click',()=>{$('scans').value='0';$('sales').value='0.00';calculate();$('scans').focus()});
+calculate();
+if('serviceWorker' in navigator && location.protocol!=='file:'){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}))}
 </script>
 </body></html>
