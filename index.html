@@ -16,7 +16,7 @@ header{background:var(--red);color:white;padding:calc(16px + env(safe-area-inset
 h1{font-size:21px;margin:0}header p{margin:3px 0 0;font-size:13px;opacity:.9}
 main{max-width:760px;margin:0 auto;padding:14px;display:grid;gap:14px}.card{background:white;border-radius:16px;padding:17px;box-shadow:0 2px 10px #27101a0b;border:1px solid var(--line)}
 h2{font-size:18px;margin:0 0 12px}.sub{font-size:13px;color:var(--muted);margin:-5px 0 13px}
-label{display:block;font-weight:650;font-size:14px;margin:10px 0 5px}input{width:100%;font:inherit;border:1px solid #d8d1d5;border-radius:10px;padding:12px;background:#fff;min-height:46px;color:var(--ink)}input:focus{outline:3px solid #a5003425;border-color:var(--red)}
+label{display:block;font-weight:650;font-size:14px;margin:10px 0 5px}.date-hint{display:block;font-size:12px;color:var(--muted);font-weight:500;margin-top:2px}input{width:100%;font:inherit;border:1px solid #d8d1d5;border-radius:10px;padding:12px;background:#fff;min-height:46px;color:var(--ink)}input:focus{outline:3px solid #a5003425;border-color:var(--red)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.metric{background:#fff8e4;border:1px solid #f4e2a7;border-radius:12px;padding:12px}.metric span{display:block;color:#665c47;font-size:12px}.metric strong{display:block;font-size:21px;margin-top:3px}.total{background:var(--red);color:white;border-radius:13px;padding:15px;margin-top:12px}.total span{font-size:13px;opacity:.9}.total strong{display:block;font-size:30px;line-height:1.2;margin-top:3px}
 button{border:0;border-radius:11px;padding:12px 15px;font:700 15px system-ui;cursor:pointer;min-height:44px}.primary{background:var(--gold);color:#2d2100;width:100%;margin-top:13px}.secondary{background:#f3e9ed;color:var(--red)}.danger{background:#fff0f1;color:#a50034}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
 .tabs{display:flex;gap:8px}.tabs button{flex:1;background:#eee7ea;color:#5b3442}.tabs button.active{background:var(--red);color:white}
@@ -25,12 +25,12 @@ button{border:0;border-radius:11px;padding:12px 15px;font:700 15px system-ui;cur
 </style>
 </head>
 <body>
-<header><div class="brand"><div class="logo">XC</div><div><h1>Scan & Commission</h1><p>XC Staff App · Daily archive & date-range totals</p></div></div></header>
+<header><div class="brand"><div class="logo">XC</div><div><h1>Scan & Commission</h1></div></div></header>
 <main>
 <section class="card">
 <h2>Today's commission</h2>
 <p class="sub">Enter the day's ticket sales and scans. Values update live.</p>
-<label for="workDate">Archive date</label><input id="workDate" type="date">
+<label for="workDate">Archive date <span class="date-hint">DD/MM/YYYY</span></label><input id="workDate" type="date" lang="en-GB">
 <div class="grid">
 <div><label for="sales">Ticket sales (£)</label><input id="sales" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
 <div><label for="scans">Ticket scans</label><input id="scans" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
@@ -47,8 +47,8 @@ button{border:0;border-radius:11px;padding:12px 15px;font:700 15px system-ui;cur
 <section class="card">
 <h2>Commission by date period</h2>
 <p class="sub">Choose a start and end date to total archived days, inclusive.</p>
-<label for="fromDate">From</label><input type="date" id="fromDate">
-<label for="toDate">To</label><input type="date" id="toDate">
+<label for="fromDate">From <span class="date-hint">DD/MM/YYYY</span></label><input type="date" id="fromDate" lang="en-GB">
+<label for="toDate">To <span class="date-hint">DD/MM/YYYY</span></label><input type="date" id="toDate" lang="en-GB">
 <div class="range-result"><div class="small" id="rangeLabel">Select a date range</div><strong id="rangeTotal">£0.00</strong><div class="small" id="rangeBreakdown">0 scans · £0.00 sales</div></div>
 <button class="primary" id="calculateRange">Calculate date period</button>
 </section>
@@ -70,13 +70,13 @@ let showRange=false;
 $('workDate').value=today(); $('fromDate').value=today(); $('toDate').value=today();
 function calc(){const sales=Math.max(0,Number($('sales').value)||0),scans=Math.max(0,Math.floor(Number($('scans').value)||0));const sc=sales*.06,tc=scans*.02; $('salesComm').textContent=pounds(sc);$('scanComm').textContent=pounds(tc);$('total').textContent=pounds(sc+tc);return {date:$('workDate').value||today(),sales,scans,salesCommission:+sc.toFixed(2),scanCommission:+tc.toFixed(2),total:+(sc+tc).toFixed(2)}}
 function persist(){localStorage.setItem('xcScanCommissionArchive',JSON.stringify(archive));renderArchive();calcRange()}
-function loadDate(){const x=archive[$('workDate').value];$('sales').value=x?x.sales:'';$('scans').value=x?x.scans:'';$('saveStatus').textContent=x?'Archived figures loaded for this date.':'';calc()}
+function loadDate(){const x=archive[$('workDate').value];$('sales').value=x?x.sales:'';$('scans').value=x?x.scans:'';$('saveStatus').textContent=x?'Archived figures loaded for '+displayDate($('workDate').value)+'.':'';calc()}
 function saveDay(){const e=calc();if(!e.date){$('saveStatus').textContent='Please select a date.';return}archive[e.date]=e;persist();$('saveStatus').textContent='Saved '+e.date+' · '+pounds(e.total)+' total commission.'}
 function calcRange(){const a=$('fromDate').value,b=$('toDate').value;if(!a||!b||a>b){$('rangeLabel').textContent='Choose a valid date range (From must be on or before To).';$('rangeTotal').textContent=pounds(0);$('rangeBreakdown').textContent='';return}
 const rows=Object.values(archive).filter(e=>e.date>=a&&e.date<=b);const totals=rows.reduce((s,e)=>({sales:s.sales+(+e.sales||0),scans:s.scans+(+e.scans||0),commission:s.commission+(+e.total||0)}),{sales:0,scans:0,commission:0});
-$('rangeLabel').textContent=`${a} to ${b} · ${rows.length} archived ${rows.length===1?'day':'days'}`;$('rangeTotal').textContent=pounds(totals.commission);$('rangeBreakdown').textContent=`${totals.scans.toLocaleString('en-GB')} scans · ${pounds(totals.sales)} sales · includes saved days only`;renderArchive()}
+$('rangeLabel').textContent=`${displayDate(a)} to ${displayDate(b)} · ${rows.length} archived ${rows.length===1?'day':'days'}`;$('rangeTotal').textContent=pounds(totals.commission);$('rangeBreakdown').textContent=`${totals.scans.toLocaleString('en-GB')} scans · ${pounds(totals.sales)} sales · includes saved days only`;renderArchive()}
 function renderArchive(){const rows=Object.values(archive).filter(e=>!showRange||(e.date>=$('fromDate').value&&e.date<=$('toDate').value)).sort((a,b)=>b.date.localeCompare(a.date));const el=$('archiveList');if(!rows.length){el.innerHTML='<div class="empty">No archived days yet. Enter figures above and select “Archive / Update This Date”.</div>';return}
-el.innerHTML=rows.map(e=>`<div class="entry"><div class="entry-head"><div><div class="entry-date">${e.date}</div><div class="small">${Number(e.scans||0).toLocaleString('en-GB')} scans · ${pounds(e.sales)} sales</div></div><div class="money">${pounds(e.total)}</div></div><div class="small">Sales commission ${pounds(e.salesCommission)} · Scan payment ${pounds(e.scanCommission)}</div><div class="actions"><button class="secondary" data-load="${e.date}">Load / Edit</button><button class="danger" data-delete="${e.date}">Delete</button></div></div>`).join('');
+el.innerHTML=rows.map(e=>`<div class="entry"><div class="entry-head"><div><div class="entry-date">${displayDate(e.date)}</div><div class="small">${Number(e.scans||0).toLocaleString('en-GB')} scans · ${pounds(e.sales)} sales</div></div><div class="money">${pounds(e.total)}</div></div><div class="small">Sales commission ${pounds(e.salesCommission)} · Scan payment ${pounds(e.scanCommission)}</div><div class="actions"><button class="secondary" data-load="${e.date}">Load / Edit</button><button class="danger" data-delete="${e.date}">Delete</button></div></div>`).join('');
 el.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>{$('workDate').value=b.dataset.load;loadDate();window.scrollTo({top:0,behavior:'smooth'})});
 el.querySelectorAll('[data-delete]').forEach(b=>b.onclick=()=>{const d=b.dataset.delete;if(confirm('Delete archived commission for '+d+'?')){delete archive[d];persist()}});
 }
